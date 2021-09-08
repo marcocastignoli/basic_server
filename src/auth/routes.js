@@ -8,13 +8,15 @@ const utilities = require('../utilities')
 const {sendToken} = require('./auth')
 const { loadSql, handleSqlError } = require('../utilities');
 
-module.exports = function(app, db) {
+module.exports = function(app, db, exceptions = []) {
 
+    console.log([/^\/auth\/.*/, ...exceptions])
+    
     const SQL = loadSql(db)
 
     app.use(cookieParser())
 
-    app.use(jwtCheck({ secret: config.privateKey, algorithms: ['HS256'], getToken: req => req.cookies.token }).unless({ path: [/^\/auth\/.*/, /^\/payment\/.*/] }) )
+    app.use(jwtCheck({ secret: config.privateKey, algorithms: ['HS256'], getToken: req => req.cookies.token }).unless({ path: [/^\/auth\/.*/, ...exceptions] }) )
 
     app.use(function (err, req, res, next) {
         if (err.name === 'UnauthorizedError') {
