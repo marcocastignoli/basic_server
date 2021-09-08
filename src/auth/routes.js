@@ -8,13 +8,22 @@ const utilities = require('../utilities')
 const {sendToken} = require('./auth')
 const { loadSql, handleSqlError } = require('../utilities');
 
+function getToken(req) {
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+        return req.headers.authorization.split(' ')[1];
+    } else if (req.cookies.token) {
+      return req.cookies.token;
+    }
+    return null;
+}
+
 module.exports = function(app, db, exceptions = []) {
 
     const SQL = loadSql(db)
 
     app.use(cookieParser())
 
-    app.use(jwtCheck({ secret: config.privateKey, algorithms: ['HS256'], getToken: req => req.cookies.token }).unless({ path: [/^\/auth\/.*/, ...exceptions] }) )
+    app.use(jwtCheck({ secret: config.privateKey, algorithms: ['HS256'], getToken }).unless({ path: [/^\/auth\/.*/, ...exceptions] }) )
 
     app.use(function (err, req, res, next) {
         if (err.name === 'UnauthorizedError') {
@@ -120,7 +129,7 @@ module.exports = function(app, db, exceptions = []) {
             delete user.password
             delete user.verification_token
             res.cookie('token', token, { httpOnly: true });
-            return res.send({ user })
+            return res.send({ user, token })
         } else {
             return res.status(401).send({
                 msg: "Pasword sbagliata"
