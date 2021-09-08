@@ -10,8 +10,6 @@ const { loadSql, handleSqlError } = require('../utilities');
 
 module.exports = function(app, db, exceptions = []) {
 
-    console.log([/^\/auth\/.*/, ...exceptions])
-    
     const SQL = loadSql(db)
 
     app.use(cookieParser())
