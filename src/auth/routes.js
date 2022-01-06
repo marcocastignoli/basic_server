@@ -35,7 +35,7 @@ module.exports = function(app, db, exceptions = []) {
         }
     });
 
-    app.post('/auth/register', utilities.validate(['username', 'password', 'phone', 'email', 'address', 'complete_name']), async (req, res) => {
+    app.post('/auth/register', utilities.validateBody(['username', 'password', 'phone', 'email', 'address', 'complete_name']), async (req, res) => {
         const verificationCode = randomize('000000')
         const passwordHash = await bcrypt.hash( req.body.password, 10)
         try {
@@ -72,7 +72,7 @@ module.exports = function(app, db, exceptions = []) {
         })
     })
 
-    app.post('/auth/activate', utilities.validate(['username', 'verificationCode']), async (req, res) => {
+    app.post('/auth/activate', utilities.validateBody(['username', 'verificationCode']), async (req, res) => {
         let result
         try {
             result = await SQL`
@@ -96,7 +96,7 @@ module.exports = function(app, db, exceptions = []) {
         }
     })
 
-    app.post('/auth/login', utilities.validate(['username', 'password']), async (req, res) => {
+    app.post('/auth/login', utilities.validateBody(['username', 'password']), async (req, res) => {
         let result
         try {
             result = await SQL`
@@ -171,7 +171,7 @@ module.exports = function(app, db, exceptions = []) {
         return res.send({user})
     })
 
-    app.post('/auth/askReset', utilities.validate(['phone']), async (req, res) => {
+    app.post('/auth/askReset', utilities.validateBody(['phone']), async (req, res) => {
         const verificationCode = randomize('000000')
         const tokenSent = await sendToken(req.body, verificationCode)
         if (!tokenSent) {
@@ -199,7 +199,7 @@ module.exports = function(app, db, exceptions = []) {
         }
     })
 
-    app.post('/auth/reset', utilities.validate(['phone', 'reset_code', 'password']), async (req, res) => {
+    app.post('/auth/reset', utilities.validateBody(['phone', 'reset_code', 'password']), async (req, res) => {
         let result
         try {
             result = await SQL`

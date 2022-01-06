@@ -4,7 +4,7 @@ module.exports = function(app, db) {
 
     const SQL = loadSql(db)
 
-    app.post('/user/update', async (req, res) => {
+    app.post('/user/update', utilities.validateBody(['address', 'complete_name']), async (req, res) => {
         let results
         try {
             results = await SQL`

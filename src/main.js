@@ -10,6 +10,7 @@ async function load() {
     const app = express()
     app.use(cors({
         origin: [
+            'http://localhost',
             'http://localhost:8080',
             config.origin
         ],

@@ -1,5 +1,5 @@
 module.exports = {
-    validate(properties) {
+    validateBody(properties) {
         return function(req, res, next) {
             let missing = []
             properties.forEach(prop => {
@@ -8,7 +8,21 @@ module.exports = {
                 }
             });
             if (missing.length > 0) {
-                return res.status(400).send({msg: `Missing fields: ${missing.join(',')}`})
+                return res.status(400).send({msg: `Missing body fields: ${missing.join(',')}`})
+            }
+            return next()
+        }
+    },
+    validateQuery(properties) {
+        return function(req, res, next) {
+            let missing = []
+            properties.forEach(prop => {
+                if (!req.query[prop]) {
+                    missing.push(prop)
+                }
+            });
+            if (missing.length > 0) {
+                return res.status(400).send({msg: `Missing query fields: ${missing.join(',')}`})
             }
             return next()
         }
